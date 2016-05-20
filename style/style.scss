@@ -1,0 +1,68 @@
+div.container {
+  width:90%;
+  margin:0 auto;
+}
+
+body {
+  font: 10px sans-serif;
+}
+
+.quarterly-line-chart {
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .y.axis {
+    text {
+      font-size: 14px;
+      font-weight: 300;
+      fill: #4A4A4A;
+    }
+    line {
+      stroke: #bbb;
+    }
+  }
+
+  .x.axis {
+    text {
+      font-size: 18px;
+      font-weight: 300;
+      fill: #4A4A4A;
+      &.highlight {
+        fill: #ED5626;
+        //font-weight: bold;
+      }
+    }
+    line {
+      stroke: #bbb;
+      stroke-dasharray: 2, 5;
+    }
+  }
+
+  .line {
+    fill: none;
+    stroke-width: 16px;
+  }
+
+  .point {
+    stroke: white;
+    stroke-width: 3px;
+  }
+
+  .label {
+    text {
+      text-anchor: middle;
+      font-size: 14px;
+      fill: #4A90E2;
+      letter-spacing: 0.03em;
+    }
+    rect {
+      fill: white;
+      stroke-width: 0.7;
+      stroke: #a4a4a4;
+    }
+  }
+}

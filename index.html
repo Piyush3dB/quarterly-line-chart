@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart</title>
+    <script src="scripts/d3.3.15.16.min.js"></script>
+    <script src="scripts/lodash.4.8.2.min.js"></script>
+    <script src="scripts/quarterly-line-graph.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/style.css">
+</head>
+<body>
+<div class="container">
+    <div id="quarterly-line-chart"></div>
+</div>
+<script>
+
+    d3.json("data/sample-data.json", function(err, data) {
+        var screenWidth = Math.floor(parseInt(d3.select('#quarterly-line-chart').style("width")));
+
+        var lineGraph = quarterlyLineGraph()
+                .width(screenWidth *.8)
+                .forceY([3500, 8500])
+                .data(data);
+
+        d3.select('#quarterly-line-chart')
+                .call(lineGraph);
+    })
+
+
+</script>
+</body>
+</html>

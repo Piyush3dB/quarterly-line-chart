@@ -1,0 +1,44 @@
+div.container {
+  width: 90%;
+  margin: 0 auto; }
+
+body {
+  font: 10px sans-serif; }
+
+.quarterly-line-chart .axis path,
+.quarterly-line-chart .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges; }
+.quarterly-line-chart .y.axis text {
+  font-size: 14px;
+  font-weight: 300;
+  fill: #4A4A4A; }
+.quarterly-line-chart .y.axis line {
+  stroke: #bbb; }
+.quarterly-line-chart .x.axis text {
+  font-size: 18px;
+  font-weight: 300;
+  fill: #4A4A4A; }
+  .quarterly-line-chart .x.axis text.highlight {
+    fill: #ED5626; }
+.quarterly-line-chart .x.axis line {
+  stroke: #bbb;
+  stroke-dasharray: 2, 5; }
+.quarterly-line-chart .line {
+  fill: none;
+  stroke-width: 16px; }
+.quarterly-line-chart .point {
+  stroke: white;
+  stroke-width: 3px; }
+.quarterly-line-chart .label text {
+  text-anchor: middle;
+  font-size: 14px;
+  fill: #4A90E2;
+  letter-spacing: 0.03em; }
+.quarterly-line-chart .label rect {
+  fill: white;
+  stroke-width: 0.7;
+  stroke: #a4a4a4; }
+
+/*# sourceMappingURL=style.css.map */
