@@ -5,7 +5,7 @@ function quarterlyLineGraph() {
 
     var width = 700;
     var height = 500;
-    var margin = {top: 20, right: 20, bottom: 60, left: 60};
+    var margin = {top: 40, right: 20, bottom: 60, left: 60};
     var autoResize = true;
     var pointRadius = 5;
     var drawingSpeed = 1;
@@ -31,7 +31,7 @@ function quarterlyLineGraph() {
             var svg = dom.append("svg")
                 .attr("class", "quarterly-line-chart")
                 .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
+                .attr("height", height + margin.top + margin.bottom + 25*seriesData.length + 30)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
 
@@ -73,15 +73,6 @@ function quarterlyLineGraph() {
                 .attr('type', 'matrix')
                 .attr('in', 'shadowBlurOuter1');
 
-
-            //<filter xmlns="http://www.w3.org/2000/svg" x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-6">
-            //    <feMorphology radius="1.5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"/>
-            //    <feOffset dx="0" dy="2" in="shadowSpreadOuter1" result="shadowOffsetOuter1"/>
-            //    <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"/>
-            //<feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"/>
-            //    <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"/>
-            //    </filter>
-
             var x = d3.scale.ordinal()
                 .domain(labelsData)
                 .rangePoints([0, width], endpointPadding);
@@ -91,7 +82,7 @@ function quarterlyLineGraph() {
                 .outerTickSize(0)
                 .orient("bottom")
                 .tickSize(-height, 0)
-                .tickPadding(8);
+                .tickPadding(12);
 
             svg.append("g")
                 .attr("class", "x axis")
@@ -137,12 +128,11 @@ function quarterlyLineGraph() {
                 .style("stroke", function(d) { return colorScale(d.name); });
 
             seriesGroup.append('g')
-                .attr('fill', function(d) { return colorScale(d.name);})
-                .selectAll('circle.point')
+                .selectAll('circle.shadow')
                 .data(function(d) { return d.values} )
                 .enter()
                 .append('circle')
-                .attr('class', 'point')
+                .attr('class', 'shadow')
                 .style("filter", "url(#drop-shadow)")
                 .attr('r', pointRadius)
                 .attr('cx', function(d, i) { return x(labelsData[i]); })
@@ -165,7 +155,7 @@ function quarterlyLineGraph() {
                 .enter()
                 .append('g')
                 .attr('class', 'label')
-                .attr('transform', function(d, i) { return 'translate(' + x(labelsData[i]) + ',' + getLabelY(d3.select(this.parentNode).datum().order, d) + ')' ;});
+                .attr('transform', function(d, i) { return 'translate(' + x(labelsData[i]) + ',' + getLabelY(d3.select(this.parentNode).datum().order, d, i) + ')' ;});
 
             labels.append('text')
                 .attr('dy', '0.35em')
@@ -183,28 +173,59 @@ function quarterlyLineGraph() {
                     .attr('ry', 15)
                     .attr('width', bbox.width + 16)
                     .attr('height', bbox.height + 6);
-
-                //setTM(rect[0][0], ctm);
-
             });
 
+            var currentAxisLabel = d3.selectAll('.x.axis g.tick').filter(function(d, i) {
+                return i == labelsData.length - 1;
+            });
 
-            function getLabelY(order, d) {
+            currentAxisLabel.classed('current', true);
+
+            currentAxisLabel.append('text')
+                .attr('dy', '0.71em')
+                .attr('y', 35)
+                .attr('class', 'annotation')
+                .text('Current');
+
+            var legend = svg.append('g')
+                .attr('class', 'legend')
+                .attr('transform', "translate(" + 0 +"," + (margin.top + 30 + height) + ")");
+
+            var legendItem = legend.selectAll('g.legend-item')
+                .data(seriesData)
+                .enter()
+                .append('g')
+                .attr('class', 'legend-item')
+                .attr('transform', function(d, i) { return 'translate(0,' + i*30 + ')'; });
+
+            legendItem.append('line')
+                .attr('x1', 0)
+                .attr('y1', 0)
+                .attr('x2', 80)
+                .attr('y2', 0)
+                .attr('stroke', function(d) { return colorScale(d.name); });
+
+            legendItem.append('text')
+                .attr('x', 100)
+                .attr('dy', '0.35em')
+                .text(function(d) { return d.name});
+
+            function getLabelY(order, d, i) {
                 var initialY = y(d);
-                var offset;
-                if(order == 0) {
-                    offset = -28;
-                } else {
-                    offset = 28;
+                var offset = -28;
+                if(seriesData.length == 2) {
+                    if(order == 0) {
+                        if(d <= seriesData[1].values[i]) {
+                            offset = 28;
+                        }
+                    } else {
+                        if(d < seriesData[0].values[i]) {
+                            offset = 28;
+                        }
+                    }
                 }
                 return initialY + offset;
             }
-
-            function setTM(element, m) {
-                return element.transform.baseVal.initialize(element.ownerSVGElement.createSVGTransformFromMatrix(m));
-            }
-
-
 
             if(autoResize) {
                 var resizeTimeout;
@@ -219,11 +240,143 @@ function quarterlyLineGraph() {
             }
 
             updateData = function() {
+                seriesData = data.series;
+                labelsData = data.labels;
+                console.log(data);
+                dom.select("svg")
+                    .attr("height", height + margin.top + margin.bottom + 25*seriesData.length + 30)
 
+                x.domain(labelsData);
+                svg.select('.x.axis').call(xAxis);
+
+                if(!forceY) {
+                    y.domain([
+                        d3.min(seriesData, function(d) { return d3.min(d.values, function(p) { return p; }); }),
+                        d3.max(seriesData, function(d) { return d3.max(d.values, function(p) { return p; }); })
+                    ]);
+                } else {
+                    y.domain(forceY);
+                }
+
+                svg.select(".y.axis")
+                    .call(yAxis);
+
+                seriesGroup.remove();
+
+                seriesGroup = svg.selectAll(".series")
+                    .data(seriesData)
+                    .enter().append("g")
+                    .attr("class", "series");
+
+                seriesGroup.append("path")
+                    .attr("class", "line")
+                    .attr("d", function(d) { return line(d.values); })
+                    .style("stroke", function(d) { return colorScale(d.name); });
+
+                seriesGroup.append('g')
+                    .selectAll('circle.shadow')
+                    .data(function(d) { return d.values} )
+                    .enter()
+                    .append('circle')
+                    .attr('class', 'shadow')
+                    .style("filter", "url(#drop-shadow)")
+                    .attr('r', pointRadius)
+                    .attr('cx', function(d, i) { return x(labelsData[i]); })
+                    .attr('cy', function(d) { return y(d)});
+
+                seriesGroup.append('g')
+                    .attr('fill', function(d) { return colorScale(d.name);})
+                    .selectAll('circle.point')
+                    .data(function(d) { return d.values} )
+                    .enter()
+                    .append('circle')
+                    .attr('class', 'point')
+                    .attr('r', pointRadius)
+                    .attr('cx', function(d, i) { return x(labelsData[i]); })
+                    .attr('cy', function(d) { return y(d)});
+
+                labels = seriesGroup.append('g')
+                    .selectAll('g.label')
+                    .data(function(d) { return d.values})
+                    .enter()
+                    .append('g')
+                    .attr('class', 'label')
+                    .attr('transform', function(d, i) { return 'translate(' + x(labelsData[i]) + ',' + getLabelY(d3.select(this.parentNode).datum().order, d, i) + ')' ;});
+
+                labels.append('text')
+                    .attr('dy', '0.35em')
+                    .text(function(d) { return '$' + d});
+
+                labels.each(function(d, i) {
+                    var text = d3.select(this).select('text');
+                    var bbox = text[0][0].getBBox();
+                    var ctm = text[0][0].getCTM();
+                    var rect = d3.select(this)
+                        .insert('rect', 'text')
+                        .attr('x', bbox.x - 8)
+                        .attr('y', bbox.y - 3)
+                        .attr('rx', 10)
+                        .attr('ry', 15)
+                        .attr('width', bbox.width + 16)
+                        .attr('height', bbox.height + 6);
+                });
+
+                //var currentAxisLabel = d3.selectAll('.x.axis g.tick').filter(function(d, i) {
+                //    return i == labelsData.length - 1;
+                //});
+                //
+                //currentAxisLabel.classed('current', true);
+                //
+                //currentAxisLabel.append('text')
+                //    .attr('dy', '0.71em')
+                //    .attr('y', 35)
+                //    .attr('class', 'annotation')
+                //    .text('Current');
+
+                legend.html('');
+
+                legendItem = legend.selectAll('g.legend-item')
+                    .data(seriesData)
+                    .enter()
+                    .append('g')
+                    .attr('class', 'legend-item')
+                    .attr('transform', function(d, i) { return 'translate(0,' + i*30 + ')'; });
+
+                legendItem.append('line')
+                    .attr('x1', 0)
+                    .attr('y1', 0)
+                    .attr('x2', 80)
+                    .attr('y2', 0)
+                    .attr('stroke', function(d) { return colorScale(d.name); });
+
+                legendItem.append('text')
+                    .attr('x', 100)
+                    .attr('dy', '0.35em')
+                    .text(function(d) { return d.name});
             };
 
             updateWidth = function() {
                 dom.select('svg').attr('width', width + margin.left + margin.right)
+                x.rangePoints([0, width], endpointPadding);
+
+                svg.select('.x.axis')
+                    .call(xAxis);
+
+                yAxis.tickSize(-width, 0);
+
+                svg.select('.y.axis')
+                    .call(yAxis);
+
+                seriesGroup.selectAll('path.line')
+                    .attr("d", function(d) { return line(d.values); });
+
+                seriesGroup.selectAll('circle.point')
+                    .attr('cx', function(d, i) { return x(labelsData[i]); });
+
+                seriesGroup.selectAll('circle.shadow')
+                    .attr('cx', function(d, i) { return x(labelsData[i]); });
+
+                labels.attr('transform', function(d, i) { return 'translate(' + x(labelsData[i]) + ',' + getLabelY(d3.select(this.parentNode).datum().order, d, i) + ')' ;});
             };
 
             updateHeight = function() {

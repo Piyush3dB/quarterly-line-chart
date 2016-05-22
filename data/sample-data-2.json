@@ -1,0 +1,11 @@
+{
+  "labels": ["Q2 2015", "Q3 2015", "Q4 2015", "Q1 2016", "Q2 2016"],
+  "series":
+  [
+    {
+      "name": "Average Rate for Excess Layer",
+      "order": 0,
+      "values": [6300, 7000, 6400, 6500, 7000]
+    }
+  ]
+}

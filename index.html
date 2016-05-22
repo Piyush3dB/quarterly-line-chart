@@ -20,10 +20,19 @@
         var lineGraph = quarterlyLineGraph()
                 .width(screenWidth *.8)
                 .forceY([3500, 8500])
+                .colorScale(d3.scale.ordinal().range(['#93B522', '#4990E2']))
                 .data(data);
 
         d3.select('#quarterly-line-chart')
                 .call(lineGraph);
+
+//        d3.json("data/sample-data-2.json", function(err, data2) {
+//
+//            window.setTimeout(function() {
+//                lineGraph.data(data2);
+//            }, 3000);
+//
+//        })
     })
 
 

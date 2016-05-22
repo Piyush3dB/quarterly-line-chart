@@ -13,18 +13,30 @@ body {
 .quarterly-line-chart .y.axis text {
   font-size: 14px;
   font-weight: 300;
-  fill: #4A4A4A; }
+  fill: #4a4a4a; }
 .quarterly-line-chart .y.axis line {
-  stroke: #bbb; }
+  stroke: #ccc; }
 .quarterly-line-chart .x.axis text {
   font-size: 18px;
   font-weight: 300;
-  fill: #4A4A4A; }
-  .quarterly-line-chart .x.axis text.highlight {
-    fill: #ED5626; }
+  fill: #4A4A4A;
+  text-anchor: middle; }
 .quarterly-line-chart .x.axis line {
   stroke: #bbb;
   stroke-dasharray: 2, 5; }
+.quarterly-line-chart .x.axis .current line {
+  stroke: #ED5626;
+  stroke-width: 2.5px; }
+.quarterly-line-chart .x.axis .current text {
+  fill: #ED5626; }
+  .quarterly-line-chart .x.axis .current text.annotation {
+    font-weight: bold; }
+.quarterly-line-chart .legend line {
+  stroke-width: 5; }
+.quarterly-line-chart .legend text {
+  font-size: 14px;
+  font-weight: 300;
+  fill: #4a4a4a; }
 .quarterly-line-chart .line {
   fill: none;
   stroke-width: 16px; }
